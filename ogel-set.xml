@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+
+<PropertyList>
+
+ <sim>
+
+  <description>ogeL experimental</description>
+  <author>Torsten Dreyer</author>
+  <startup>
+    <splash-texture>Aircraft/ogel/splash.rgb</splash-texture>
+  </startup>
+
+ 
+  <flight-model>jsb</flight-model>
+  <aero>ogel-jsbsim</aero>
+
+  <panel>
+   <visibility>false</visibility>
+  </panel>
+
+  <model>
+   <path>Aircraft/ogel/Models/SinglePiston.xml</path>
+  </model>
+  <view n="0">
+    <internal archive="y">true</internal>
+    <config>
+      <x-offset-m archive="y" type="double">-0.1</x-offset-m>
+      <y-offset-m archive="y" type="double">1.90</y-offset-m>
+      <z-offset-m archive="y" type="double">0.0</z-offset-m>
+      <pitch-offset-deg>0</pitch-offset-deg>
+    </config>
+  </view>
+  <help>
+    <title>ogeL - fly with fun!</title>
+    <line>Go and explore the world with oLeg, the pilot.</line>
+    <line>Hit the space bar and the propeller starts to turn</line>
+    <line>slowly advance the throttle to about 1/2 way full travel</line>
+    <line>shortly after the aircraft lifts its tail, pull the elevator</line>
+    <line>and oLeg will lift of. Good luck!</line>
+  </help>
+
+
+<!--
+  <virtual-cockpit archive="y">true</virtual-cockpit>
+-->
+
+  </sim>
+  <controls>
+    <engines>
+      <engine n="0">
+        <magnetos>3</magnetos>
+      </engine>
+    </engines>
+  </controls>
+</PropertyList>

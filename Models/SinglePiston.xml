@@ -110,4 +110,11 @@
             <z-m>-0.00174047</z-m>
         </center>
     </animation>
+    <animation>
+        <type>select</type>
+        <object-name>Mouth</object-name>
+        <condition>
+            <property>sim/mouth-open</property>
+        </condition>
+    </animation>
 </PropertyList>

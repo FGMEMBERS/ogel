@@ -74,7 +74,9 @@ $Revision$
             <line>shortly after the aircraft lifts its tail, pull the elevator</line>
             <line>and oLeg will lift of. Good luck!</line>
         </help>
+        <mouth-open type="bool">false</mouth-open>
     </sim>
+
     <controls>
         <engines>
             <engine n="0">
@@ -82,4 +84,26 @@ $Revision$
             </engine>
         </engines>
     </controls>
+
+    <input>
+        <keyboard>
+            <key n="32">
+                <name>Space</name>
+                <desc>Open-Close Mouth</desc>
+                <binding>
+                    <command>property-assign</command>
+                    <property>sim/mouth-open</property>
+                    <value>1</value>
+                </binding>
+                <mod-up>
+                    <binding>
+                        <command>property-assign</command>
+                        <property>sim/mouth-open</property>
+                        <value>0</value>
+                    </binding>
+                </mod-up>
+            </key>
+        </keyboard>
+    </input>
+
 </PropertyList>

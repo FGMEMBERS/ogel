@@ -39,14 +39,14 @@ $Revision$
     <sim>
         <author>Torsten Dreyer</author>
         <description>ogeL experimental for JSBSim 2.x (fg after 0.9.9)</description>
-<!--
-        <description>ogeL experimental for JSBSim 1.x (fg 0.9.9 and older)</description>
--->
         <status>early-production</status>
+        <rating>
+          <FDM type="int">5</FDM>
+          <systems type="int">5</systems>
+          <cockpit type="int">5</cockpit>
+          <model type="int">5</model>
+        </rating>
         <flight-model>jsb</flight-model>
-<!--
-        <aero>ogel-jsbsim</aero>
--->
         <aero>ogel-jsbsim-2.0</aero>
         <startup>
             <splash-texture>Aircraft/ogel/splash.rgb</splash-texture>
@@ -63,7 +63,7 @@ $Revision$
                 <x-offset-m archive="y" type="double">-0.1</x-offset-m>
                 <y-offset-m archive="y" type="double">1.90</y-offset-m>
                 <z-offset-m archive="y" type="double">0.0</z-offset-m>
-                <pitch-offset-deg>0</pitch-offset-deg>
+                <pitch-offset-deg>-14</pitch-offset-deg>
             </config>
         </view>
         <help>
@@ -75,6 +75,22 @@ $Revision$
             <line>and oLeg will lift of. Good luck!</line>
         </help>
         <mouth-open type="bool">false</mouth-open>
+
+        <menubar>
+          <default>
+            <menu n="100">
+              <label>ogeL</label>
+              <enabled type="bool">true</enabled>
+              <item>
+                <label>Select Livery</label>
+                <binding>
+                  <command>nasal</command>
+                  <script>aircraft.livery.dialog.toggle()</script>
+                </binding>
+              </item>
+            </menu>
+          </default>
+        </menubar>
     </sim>
 
     <controls>
@@ -105,5 +121,17 @@ $Revision$
             </key>
         </keyboard>
     </input>
+    <nasal>
+      <ogel>
+        <script>
+        <![CDATA[
+          aircraft.livery.init(
+              "Aircraft/ogel/Models/Liveries", 
+              "sim/model/livery/name" );
+        ]]>
+        </script>
+
+      </ogel>
+    </nasal>
 
 </PropertyList>

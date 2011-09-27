@@ -20,11 +20,24 @@
 
   For more information see ogel-set.xml or visit
   http://www.t3r.de/fg/ogel/
-  
-  $Revision$
 -->
 <PropertyList>
     <path>SinglePiston.ac</path>
+    <nasal>
+      <load>
+        var livery_update = aircraft.livery_update.new("Aircraft/ogel/Models/Liveries");
+      </load>
+      <unload>
+        livery_update.stop();
+      </unload>
+    </nasal>
+    <animation>
+      <type>material</type>
+      <object-name>Fin</object-name>
+      <property-base>sim/model/livery</property-base>
+      <texture-prop>texture</texture-prop>
+      <texture>schnuller.png</texture>
+    </animation>
     <animation>
         <type>rotate</type>
         <object-name>Head</object-name>

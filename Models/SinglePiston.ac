@@ -224,7 +224,7 @@ OBJECT poly
 name "Fin"
 data 8
 Mesh.002
-texture "schnuller.rgb"
+texture "schnuller.png"
 texrep 1 1
 crease 45.000000
 numvert 8
@@ -1066,7 +1066,7 @@ OBJECT poly
 name "Head"
 data 8
 Mesh.008
-texture "texture.rgb"
+texture "texture.png"
 texrep 1 1
 crease 45.000000
 numvert 242
@@ -8445,7 +8445,7 @@ OBJECT poly
 name "Mouth"
 data 6
 Circle
-texture "texture.rgb"
+texture "texture.png"
 texrep 1 1
 crease 30.000000
 numvert 20

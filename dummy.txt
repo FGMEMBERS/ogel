@@ -1,2 +1,2 @@
-This is a test and this is #2.
+This is a test and this is #4.
 Testing post-commit hook.

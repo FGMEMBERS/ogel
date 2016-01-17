@@ -59,7 +59,7 @@ def title(text):
     print("%s\n" % top)
 
 print("\n" + "*"*80)
-print("This is the ogel, test.py external python script.")
+print("This is the py-ogel, test.py external python script.")
 
 title("Check out the property tree module.")
 print("Importing prop_tree.")

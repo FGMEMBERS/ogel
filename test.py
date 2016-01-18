@@ -1,3 +1,20 @@
+# Python module imports.
+import sys
+
+
+# Formatting strings for the invalid maths checks.
+MATH_CHECK_STRINGS = [
+    "%s + 1",
+    "1 + %s",
+    "%s - 1",
+    "1 - %s",
+    "%s * 1",
+    "1 * %s",
+    "%s / 1",
+    "1 / %s",
+]
+
+
 def invalid_math_check(node=None, type=None):
     """Test out the invalid mathematical operation.
 
@@ -28,22 +45,177 @@ def invalid_math_check(node=None, type=None):
                 1 / node
             raise NameError("TypeError not raised.")
         except TypeError:
-            if i == 0:
-                print("Correct TypeError: %s + 1" % type)
-            elif i == 1:
-                print("Correct TypeError: 1 + %s" % type)
-            elif i == 2:
-                print("Correct TypeError: %s - 1" % type)
-            elif i == 3:
-                print("Correct TypeError: 1 - %s" % type)
-            elif i == 4:
-                print("Correct TypeError: %s * 1" % type)
-            elif i == 5:
-                print("Correct TypeError: 1 * %s" % type)
-            elif i == 6:
-                print("Correct TypeError: %s / 1" % type)
-            elif i == 7:
-                print("Correct TypeError: 1 / %s" % type)
+            print("Correct TypeError for %s" % MATH_CHECK_STRINGS[i] % type)
+
+
+def test_equality(name=None, value=-1, eq=-1, ne=-1, le=-1, ge=-1, lt=-1, gt=-1):
+    """Test the various equality operators on the node object.
+
+    @keyword name:      The name of the property tree Python object.
+    @type name:         str
+    @keyword value:     The optional value to set the property tree node to (e.g. to create it).
+    @type value:        object
+    @keyword eq:        The value that should be equal (==) to the node value.
+    @type eq:           object
+    @keyword ne:        The value that should not be equal (!=) to the node value.
+    @type eq:           object
+    @keyword le:        The value that should be less than or equal (<=) to the node value.
+    @type le:           list of objects
+    @keyword ge:        The value that should be greater than or equal (>=) to the node value.
+    @type ge:           list of objects
+    @keyword lt:        The value that should be less than (<) to the node value.
+    @type lt:           object
+    @keyword gt:        The value that should be greater than (>) to the node value.
+    @type gt:           object
+    """
+
+    # Init.
+    flag = True
+
+    # Set the value.
+    if value != -1:
+        setattr(props, name, value)
+
+    # Get the node object.
+    obj = getattr(props, name)
+    sys.stdout.write("Equality testing of %s\n" % obj)
+
+    # Equality (==) test.
+    if eq != -1:
+        sys.stdout.write("\tTesting if \"props.%s == %s\": Test " % (name, eq))
+        if obj == eq:
+            result = "passed"
+        else:
+            result = "failed"
+            flag = False
+        sys.stdout.write("%s.\n" % result)
+
+    # Inequality (!=) test.
+    if ne != -1:
+        sys.stdout.write("\tTesting if \"props.%s != %s\": Test " % (name, ne))
+        if obj != ne:
+            result = "passed"
+        else:
+            result = "failed"
+            flag = False
+        sys.stdout.write("%s.\n" % result)
+
+    # Less than or equal (<=) test.
+    if le != -1:
+        for le_item in le:
+            sys.stdout.write("\tTesting if \"props.%s <= %s\": Test " % (name, le_item))
+            if obj <= le_item:
+                result = "passed"
+            else:
+                result = "failed"
+                flag = False
+            sys.stdout.write("%s.\n" % result)
+
+    # Greater than or equal (>=) test.
+    if ge != -1:
+        for ge_item in ge:
+            sys.stdout.write("\tTesting if \"props.%s >= %s\": Test " % (name, ge_item))
+            if obj >= ge_item:
+                result = "passed"
+            else:
+                result = "failed"
+                flag = False
+            sys.stdout.write("%s.\n" % result)
+
+    # Less than (<) test.
+    if lt != -1:
+        sys.stdout.write("\tTesting if \"props.%s < %s\": Test " % (name, lt))
+        if obj < lt:
+            result = "passed"
+        else:
+            result = "failed"
+            flag = False
+        sys.stdout.write("%s.\n" % result)
+
+    # Greater than (>) test.
+    if gt != -1:
+        sys.stdout.write("\tTesting if \"props.%s > %s\": Test " % (name, gt))
+        if obj > gt:
+            result = "passed"
+        else:
+            result = "failed"
+            flag = False
+        sys.stdout.write("%s.\n" % result)
+
+    # Failure of the tests.
+    if not flag:
+        raise NameError("Test failure.")
+
+
+def test_length(name=None, length=0):
+    """Test the length of the property tree array.
+
+    @keyword name:      The name of the property tree Python object.
+    @type name:         str
+    @keyword length:    The expected length.
+    @type length:       int
+    """
+
+    node = getattr(props, name)
+    print(repr(node))
+    __len__ = len(node)
+    print("The props.%s length: %s (should be %s)." % (name, __len__, length))
+    if __len__ != length:
+        raise NameError("The props.%s length of %i is incorrect." % (name, __len__))
+
+
+def test_string_repr(name=None, value=-1, repr=None):
+    """Test the string representation of a Node object.
+
+    @keyword name:      The name of the property tree Python object.
+    @type name:         str
+    @keyword value:     The optional value to set the property tree node to (e.g. to create it).
+    @type value:        object
+    """
+
+    # Set the value.
+    if value != -1:
+        setattr(props, name, value)
+
+    # The value and string repr are the same.
+    if not repr:
+        repr = value
+
+    # The string representation of the node object.
+    obj = getattr(props, name)
+    str_repr = str(obj)
+
+    # Failure.
+    if str_repr != repr:
+        raise NameError("The string representation of props.%s is %s but it should be %s." % (name, str(str_repr), str(repr)))
+
+    # Test passed.
+    print("The string representation of props.%s is '%s': Test passed." % (name, str_repr))
+
+
+def test_underscore_translation(name=None, path=None, value=None):
+    """Test the path '-' -> '_' and '__' -> '_' translations.
+
+    @keyword name:      The name of the property tree Python object.
+    @type name:         str
+    @keyword path:      The expected property tree path.
+    @type path:         str
+    @keyword value:     The optional value to set the property tree node to (e.g. to create it).
+    @type value:        object
+    """
+
+    # Get the node.
+    node = getattr(props, name)
+
+    # Set the value.
+    if value:
+        setattr(props, name, value)
+
+    # Print and check the path.
+    print(repr(node))
+    node_path = node.strPath()
+    if node_path != path:
+        raise NameError("The paths '%s' and '%s' do not match." % node_path, path)
 
 
 def title(text):
@@ -58,6 +230,7 @@ def title(text):
     print("# %s #" % text)
     print("%s\n" % top)
 
+
 print("\n" + "*"*80)
 print("This is the py-ogel, test.py external python script.")
 
@@ -71,7 +244,7 @@ print("prop_tree.Node.__dict__ = %s" % dir(prop_tree.Node))
 del prop_tree
 
 title("Testing some properties.")
-print("%-20s %s" % ("props.sim: ", props.sim))
+print("%-20s %s" % ("props.sim: ", repr(props.sim)))
 x = props.sim.aero
 print("%-20s %s" % ("x:", x))
 print("%-20s %s" % ("x.strPath(): ", x.strPath()))
@@ -80,6 +253,8 @@ print("%-20s %s" % ("x: ", x))
 print("%-20s %s" % ("y: ", y))
 print("%-20s %s" % ("x.strPath(): ", x.strPath()))
 print("%-20s %s" % ("y.strPath(): ", y.strPath()))
+print("%-20s %s" % ("repr(x): ", repr(x)))
+print("%-20s %s" % ("repr(y): ", repr(y)))
 
 title("Testing deletion of an aliased node.")
 del x
@@ -87,20 +262,20 @@ del x
 title("Testing property setting.")
 props.environment.moonlight = 0.3
 z = props.environment.moonlight
-print("%-20s %s" % ("z: ", z))
-print("%-20s %s" % ("z: ", z))
+print("%-20s %s" % ("z: ", repr(z)))
+print("%-20s %s" % ("z: ", repr(z)))
 z = props.environment.moonlight[0]
 props.environment.moonlight[0] = 20
-print("%-20s %s" % ("z: ", z))
-print(props.systems.electrical.serviceable)
+print("%-20s %s" % ("z: ", repr(z)))
+print(repr(props.systems.electrical.serviceable))
 props.systems.electrical.serviceable = False
-print(props.systems.electrical.serviceable)
+print(repr(props.systems.electrical.serviceable))
 props.systems.electrical.serviceable = True
-print(props.systems.electrical.serviceable)
+print(repr(props.systems.electrical.serviceable))
 props.environment.aaa = "test string"
-print(props.environment.aaa)
+print(repr(props.environment.aaa))
 props.environment.testint = 100
-print(props.environment.testint)
+print(repr(props.environment.testint))
 
 title("Testing concatenation.")
 data = [["a", "b", "ab"], [1, 2, 3], [1.0, 2.0, 3.0]]
@@ -111,12 +286,13 @@ for i in range(len(data)):
     a = props.py_testing[i].a
     b = props.py_testing[i].b
     props.py_testing[i].c = (a + b)
-    print("\tresult: %s" % (a + b))
-    print("\tresult: %s" % props.py_testing[i].c)
+    print("\tTrue result: %s" % (a + b))
+    print("\tProperty tree result: %s" % repr(props.py_testing[i].c))
     if props.py_testing[i].c != data[i][2]:
         str = "\tThe results do not match: %s != %s" % (repr(props.py_testing[i].c), repr(data[i][2]))
-        print(str)
-        #raise NameError(str)
+        raise NameError(str)
+    else:
+        print("\tThe results match.")
 
 title("Testing property setting failure.")
 try:
@@ -136,21 +312,62 @@ print("z / 2 = %s" % (z / 2.0))
 
 title("Testing invalid maths operations.")
 props.invalid_math.type[0] = "X"
-print(props.invalid_math.type[0])
+print(repr(props.invalid_math.type[0]))
 invalid_math_check(node=props.environment.aaa, type="<str>")
 props.invalid_math.type[1] = True
-print(props.invalid_math.type[1])
+print(repr(props.invalid_math.type[1]))
 invalid_math_check(node=props.environment.aaa, type="<bool>")
 
 title("Testing the non-existant path '/abc' for an AttributeError.")
 try:
-    props.abc
+    print(repr(props.abc))
     raise NameError("No AttributeError has been raised.")
 except AttributeError:
-    print("AttributeError raised.")
+    print("AttributeError for props.abc correctly raised.")
 
-title("Testing 'props.position.altitude_ft' to '/position/altitude-ft' translation.")
-print(props.position.altitude_ft)
+
+title("Testing path '-' and '_' translations.")
+test_underscore_translation(name="position.altitude_ft", path="/position/altitude-ft")
+test_underscore_translation(name="underscore.a_b__c_d__e", path="/underscore/a-b_c-d_e", value="underscore test")
+
+
+title("Testing the length of an array.")
+test_length(name="py_testing", length=len(data))
+test_length(name="systems.electrical.serviceable", length=1)
+
+
+title("Testing setattr() and hasattr() on the props object.")
+setattr(props, 'setattr_test', True)
+print(repr(props.setattr_test))
+if not hasattr(props, 'setattr_test'):
+    raise NameError("The \"/setattr-test\" property node was not created.")
+
+
+title("Equality condition testing.")
+test_equality(name="test_bool_equality", value=True, eq=True, ne=False)
+test_equality(name="test_int_equality", value=10, eq=10, ne=True, le=[10, 21], ge=[10, 1], lt=20000, gt=-2000)
+test_equality(name="test_double_equality", value=10.0, eq=10.0, ne=True, le=[10.0, 21.0], ge=[10.0, 1.0], lt=20000.0, gt=-2000.0)
+test_equality(name="test_string_equality", value="hello", eq="hello", ne="Hello")
+try:
+    print("Segfault checking:")
+    test_equality(name="test_string_equality_segfault", value="hello", eq="hello", ne="Hello", le=[10.0, 21.0], ge=[10.0, 1.0], lt=20000.0, gt=-2000.0)
+except TypeError:
+    print("\nTypeError caught - no segfault.")
+
+
+title("Testing the string representation.")
+test_string_repr(name="test_string_repr", value='Hello!', repr=None)
+test_string_repr(name="test_string_repr[1]", value=200, repr='200')
+test_string_repr(name="test_string_repr[2]", value=True, repr='True')
+
+
+title("Subnode testing.")
+a = props.testing
+c = a[0].c
+print(a)
+print(c)
+if a[0].c != data[0][2]:
+    raise NameError("The testing[0].c value of '%s' should be '%s'." % (a[0].c, data[0][2]))
 
 print("*"*80 + "\n")
 

@@ -48,6 +48,52 @@ def invalid_math_check(node=None, type=None):
             print("Correct TypeError for %s" % MATH_CHECK_STRINGS[i] % type)
 
 
+def test_bool(title=None, name=None, value_true=None, value_false=None):
+    """Test the boolean qualities of the Node object.
+
+    @keyword title:         The check title.
+    @type title:            str
+    @keyword name:          The name of the property tree Python object.
+    @type name:             str
+    @keyword value_true:    The property tree node value that should evaluate to True.
+    @type value_true:       object
+    @keyword value_false:   The property tree node value that should evaluate to False.
+    @type value_false:      object
+    """
+
+    # Truth checks.
+    ###############
+
+    # Set the value.
+    setattr(props, name, value_true)
+
+    # Get the node object.
+    obj = getattr(props, name)
+    sys.stdout.write("Truth check for the %s object %s: Test " % (title, repr(obj)))
+
+    # Bool checks.
+    if obj:
+        sys.stdout.write("passed.\n")
+    else:
+        sys.stdout.write("failed.\n")
+        raise NameError("Test failure")
+
+
+    # Falsity checks.
+    #################
+
+    # Set the value.
+    setattr(props, name, value_false)
+    sys.stdout.write("Falsity check for the %s object %s: Test " % (title, repr(obj)))
+
+    # Bool checks.
+    if obj:
+        sys.stdout.write("failed.\n")
+        raise NameError("Test failure")
+    else:
+        sys.stdout.write("passed.\n")
+
+
 def test_equality(name=None, value=-1, eq=-1, ne=-1, le=-1, ge=-1, lt=-1, gt=-1):
     """Test the various equality operators on the node object.
 
@@ -78,69 +124,99 @@ def test_equality(name=None, value=-1, eq=-1, ne=-1, le=-1, ge=-1, lt=-1, gt=-1)
 
     # Get the node object.
     obj = getattr(props, name)
-    sys.stdout.write("Equality testing of %s\n" % obj)
+    sys.stdout.write("Equality testing of '%s':\n" % obj)
 
     # Equality (==) test.
     if eq != -1:
         sys.stdout.write("\tTesting if \"props.%s == %s\": Test " % (name, eq))
-        if obj == eq:
-            result = "passed"
-        else:
-            result = "failed"
+        result = "failed"
+        try:
+            if obj == eq:
+                result = "passed"
+            else:
+                flag = False
+        except TypeError:
+            sys.stdout.write("failed - TypeError.\n")
             flag = False
-        sys.stdout.write("%s.\n" % result)
+        else:
+            sys.stdout.write("%s.\n" % result)
 
     # Inequality (!=) test.
     if ne != -1:
         sys.stdout.write("\tTesting if \"props.%s != %s\": Test " % (name, ne))
-        if obj != ne:
-            result = "passed"
-        else:
-            result = "failed"
+        result = "failed"
+        try:
+            if obj != ne:
+                result = "passed"
+            else:
+                flag = False
+        except TypeError:
+            sys.stdout.write("failed - TypeError.\n")
             flag = False
-        sys.stdout.write("%s.\n" % result)
+        else:
+            sys.stdout.write("%s.\n" % result)
 
     # Less than or equal (<=) test.
     if le != -1:
         for le_item in le:
             sys.stdout.write("\tTesting if \"props.%s <= %s\": Test " % (name, le_item))
-            if obj <= le_item:
-                result = "passed"
-            else:
-                result = "failed"
+            result = "failed"
+            try:
+                if obj <= le_item:
+                    result = "passed"
+                else:
+                    flag = False
+            except TypeError:
+                sys.stdout.write("failed - TypeError.\n")
                 flag = False
-            sys.stdout.write("%s.\n" % result)
+            else:
+                sys.stdout.write("%s.\n" % result)
 
     # Greater than or equal (>=) test.
     if ge != -1:
         for ge_item in ge:
             sys.stdout.write("\tTesting if \"props.%s >= %s\": Test " % (name, ge_item))
-            if obj >= ge_item:
-                result = "passed"
-            else:
-                result = "failed"
+            result = "failed"
+            try:
+                if obj >= ge_item:
+                    result = "passed"
+                else:
+                    flag = False
+            except TypeError:
+                sys.stdout.write("failed - TypeError.\n")
                 flag = False
-            sys.stdout.write("%s.\n" % result)
+            else:
+                sys.stdout.write("%s.\n" % result)
 
     # Less than (<) test.
     if lt != -1:
         sys.stdout.write("\tTesting if \"props.%s < %s\": Test " % (name, lt))
-        if obj < lt:
-            result = "passed"
-        else:
-            result = "failed"
+        result = "failed"
+        try:
+            if obj < lt:
+                result = "passed"
+            else:
+                flag = False
+        except TypeError:
+            sys.stdout.write("failed - TypeError.\n")
             flag = False
-        sys.stdout.write("%s.\n" % result)
+        else:
+            sys.stdout.write("%s.\n" % result)
 
     # Greater than (>) test.
     if gt != -1:
         sys.stdout.write("\tTesting if \"props.%s > %s\": Test " % (name, gt))
-        if obj > gt:
-            result = "passed"
-        else:
-            result = "failed"
+        result = "failed"
+        try:
+            if obj > gt:
+                result = "passed"
+            else:
+                flag = False
+        except TypeError:
+            sys.stdout.write("failed - TypeError.\n")
             flag = False
-        sys.stdout.write("%s.\n" % result)
+        else:
+            sys.stdout.write("%s.\n" % result)
 
     # Failure of the tests.
     if not flag:
@@ -301,14 +377,26 @@ except AttributeError:
     print("Skipping the AttributeError.")
 
 title("Testing maths operations.")
-print("z + 1 = %s" % (z + 1))
-print("1 + z = %s" % (1.0 + z))
-print("z - 1 = %s" % (z - 1.0))
-print("1 - z = %s" % (1 - z))
-print("z * 2 = %s" % (z * 2.0))
-print("2 * z = %s" % (2.0 * z))
-print("2 / z = %s" % (2.0 / z))
+print("z = %s" % repr(z))
+print("z + 1  = %s" % (z + 1))
+print("1 + z  = %s" % (1.0 + z))
+print("z - 1  = %s" % (z - 1.0))
+print("1 - z  = %s" % (1 - z))
+print("z * 2  = %s" % (z * 2.0))
+print("2 * z  = %s" % (2.0 * z))
+print("z / 3  = %s" % (z / 3.0))
+print("3 / z  = %s" % (3.0 / z))
+print("z**2   = %s" % (z**2))
+print("2**z   = %s" % (2**z))
+print("z %% 3  = %s" % (z % 3))
+print("3 %% z  = %s" % (3 % z))
+print("z // 3 = %s" % (z // 3))
+print("3 // z = %s" % (3 // z))
+props.test_maths[0] = -3
+z = props.test_maths[0]
+print("\nz = %s" % repr(z))
 print("z / 2 = %s" % (z / 2.0))
+print("2 / z = %s" % (2.0 / z))
 
 title("Testing invalid maths operations.")
 props.invalid_math.type[0] = "X"
@@ -351,8 +439,8 @@ test_equality(name="test_string_equality", value="hello", eq="hello", ne="Hello"
 try:
     print("Segfault checking:")
     test_equality(name="test_string_equality_segfault", value="hello", eq="hello", ne="Hello", le=[10.0, 21.0], ge=[10.0, 1.0], lt=20000.0, gt=-2000.0)
-except TypeError:
-    print("\nTypeError caught - no segfault.")
+except NameError:
+    print("\nNameError caught - no segfault.")
 
 
 title("Testing the string representation.")
@@ -362,14 +450,73 @@ test_string_repr(name="test_string_repr[2]", value=True, repr='True')
 
 
 title("Subnode testing.")
-a = props.testing
-c = a[0].c
-print(a)
-print(c)
-if a[0].c != data[0][2]:
-    raise NameError("The testing[0].c value of '%s' should be '%s'." % (a[0].c, data[0][2]))
+print("Normal subnode.")
+props.test_subnode.c = "subnode"
+print("\tSetting: a = props.test_subnode")
+a = props.test_subnode
+print("\ta.c: %s" % repr(a.c))
+print("\tSetting: b = props.test_subnode.c; b += '_test'")
+b = props.test_subnode.c
+b += '_test'
+print("\tSetting: c = a.c")
+c = a.c
+print("\ta: %s" % repr(a))
+print("\tb: %s" % repr(b))
+print("\tc: %s" % repr(c))
+if a.c != "subnode_test":
+    raise NameError("\tThe test_subnode.c value of '%s' should be 'subnode_test'." % a.c)
 
-print("*"*80 + "\n")
+print("Array-type subnode.")
+props.test_subnode[1].c = "subnode"
+print("\tSetting: a = props.test_subnode[1]")
+a = props.test_subnode[1]
+print("\ta.c: %s" % repr(a.c))
+print("\tSetting: b = props.test_subnode[1].c; b += '_test'")
+b = props.test_subnode[1].c
+b += '_test'
+print("\tSetting: c = a.c")
+c = a.c
+print("\ta: %s" % repr(a))
+print("\tb: %s" % repr(b))
+print("\tc: %s" % repr(c))
+if a.c != "subnode_test":
+    raise NameError("\tThe test_subnode[0].c value of '%s' should be 'subnode_test'." % a.c)
+
+
+title("Testing inplace maths operations.")
+props.test_inplace[0] = 20
+z = props.test_inplace[0]; print("Init z  = %s" % repr(z))
+z += 1;  print("z += 1  = %s" % repr(z))
+z -= 11; print("z -= 11 = %s" % repr(z))
+z *= 2;  print("z *= 2  = %s" % repr(z))
+z /= 3;  print("z /= 3  = %s" % repr(z))
+z **= 2; print("z **= 2 = %s" % repr(z))
+z //= 3; print("z //= 3 = %s" % repr(z))
+z %= 3;  print("z %%= 3  = %s" % repr(z))
+
+props.test_inplace[1] = 20.0
+z = props.test_inplace[1]; print("\nInit z  = %s" % repr(z))
+z += 1;  print("z += 1  = %s" % repr(z))
+z -= 11; print("z -= 11 = %s" % repr(z))
+z *= 2;  print("z *= 2  = %s" % repr(z))
+z /= 3;  print("z /= 3  = %s" % repr(z))
+z **= 2; print("z **= 2 = %s" % repr(z))
+z //= 3; print("z //= 3 = %s" % repr(z))
+z %= 3;  print("z %%= 3  = %s" % repr(z))
+
+props.test_inplace[2] = "20"
+z = props.test_inplace[2]; print("\nInit z   = %s" % repr(z))
+z += "1";  print("z += \"1\" = %s" % repr(z))
+
+
+title("Boolean checks.")
+test_bool(title="bool type", name="test_bool_check[0]", value_true=True, value_false=False)
+test_bool(title="int type", name="test_bool_check[1]", value_true=1, value_false=0)
+test_bool(title="double type", name="test_bool_check[2]", value_true=1.0, value_false=0.0)
+test_bool(title="string type", name="test_bool_check[3]", value_true="Hello", value_false="")
+
+print("\n\n" + "*"*80 + "\n")
 
 # Finish with an error.
+print("Here is an AttributeError, for luck:")
 print(props.does_not_exist)

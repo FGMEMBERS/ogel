@@ -1,4 +1,5 @@
 # Python module imports.
+from operator import pos, neg
 import sys
 
 
@@ -13,6 +14,9 @@ MATH_CHECK_STRINGS = [
     "%s / 1",
     "1 / %s",
 ]
+
+# Maths testing index.
+MATHS_INDEX = 0
 
 
 def check_value(val1, val2):
@@ -269,6 +273,193 @@ def test_length(name=None, length=0):
             raise NameError("The path '%s' should be '%s'." % (node[i].strPath(), real_path))
 
 
+def test_maths_operation(val1=None, val2=None, final_val=None, operator=None, error=None, rev=False, inplace=False):
+    """Test various maths operators.
+
+    @keyword val1:      The starting value.
+    @type val1:         object
+    @keyword val2:      The second value in the operation.
+    @type val2:         object
+    @keyword final_val: The expected value.
+    @type final_val:    object
+    @keyword operator:  The string representation of the operator.
+    @type operator:     str
+    @keyword error:     The expected error, if any.  Leave as None for no error expected.
+    @type error:        None or ErrorType
+    @keyword rev:       A flag which if True will cause the reverse operation to be performed.
+    @type rev:          bool
+    @keyword inplace:   The flag specifying if the inplace operator should be used.
+    @type inplace:      bool
+    """
+
+    # Init.
+    error_flag = False
+    global MATHS_INDEX
+    op_val = [None, None]
+    args = 1
+    if val2 != None and not inplace:
+        args = 2
+
+    # Sanity check.
+    if rev and inplace:
+        raise NameError("Testing the reverse inplace operation is not supported.")
+
+    # Forwards operation, with error catching.
+    try:
+        # Loop over two conditions - [Node + PyObject, Node + Node].
+        for i in range(args):
+            # Node + PyObject - set the initial value, and alias it.
+            if i == 0:
+                props.test_inplace[MATHS_INDEX] = val1
+                a = props.test_inplace[MATHS_INDEX]
+                b = val2
+                a_repr = repr(a)
+                a_text = "<node>"
+                b_repr = repr(b)
+                b_text = b_repr
+                MATHS_INDEX += 1
+            else:
+                props.test_inplace[MATHS_INDEX] = val2
+                b = props.test_inplace[MATHS_INDEX]
+                b_repr = repr(b)
+                MATHS_INDEX += 1
+
+            # Switch the values.
+            if rev:
+                tmp1, tmp2 = b, a
+            else:
+                tmp1, tmp2 = a, b
+
+            if operator == '+':
+                if not inplace:
+                    op_val[i] = tmp1 + tmp2
+                else:
+                    tmp1 += tmp2
+            elif operator == '-':
+                if not inplace:
+                    op_val[i] = tmp1 - tmp2
+                else:
+                    tmp1 -= tmp2
+            elif operator == '*':
+                if not inplace:
+                    op_val[i] = tmp1 * tmp2
+                else:
+                    tmp1 *= tmp2
+            elif operator == '/':
+                if not inplace:
+                    op_val[i] = tmp1 / tmp2
+                else:
+                    tmp1 /= tmp2
+            elif operator == '**':
+                if not inplace:
+                    op_val[i] = tmp1 ** tmp2
+                else:
+                    tmp1 **= tmp2
+            elif operator == '%':
+                if not inplace:
+                    op_val[i] = tmp1 % tmp2
+                else:
+                    tmp1 %= tmp2
+            elif operator == '//':
+                if not inplace:
+                    op_val[i] = tmp1 // tmp2
+                else:
+                    tmp1 //= tmp2
+            elif operator == 'divmod':
+                if not inplace:
+                    op_val[i] = divmod(tmp1, tmp2)
+                else:
+                    raise NameError("Inplace not supported.")
+            elif operator == 'neg':
+                if inplace or rev:
+                    raise NameError("Inplace or reverse operations are not supported.")
+                op_val[i] = neg(a)
+            elif operator == 'pos':
+                if inplace or rev:
+                    raise NameError("Inplace or reverse operations are not supported.")
+                op_val[i] = pos(a)
+            elif operator == 'abs':
+                if inplace or rev:
+                    raise NameError("Inplace or reverse operations are not supported.")
+                op_val[i] = abs(a)
+            elif operator == '~':
+                if inplace or rev:
+                    raise NameError("Inplace or reverse operations are not supported.")
+                op_val[i] = ~a
+            elif operator == '<<':
+                if not inplace:
+                    op_val[i] = tmp1 << tmp2
+                else:
+                    tmp1 <<= tmp2
+            elif operator == '>>':
+                if not inplace:
+                    op_val[i] = tmp1 >> tmp2
+                else:
+                    tmp1 >>= tmp2
+            elif operator == '&':
+                if not inplace:
+                    op_val[i] = tmp1 & tmp2
+                else:
+                    tmp1 &= tmp2
+            elif operator == '^':
+                if not inplace:
+                    op_val[i] = tmp1 ^ tmp2
+                else:
+                    tmp1 ^= tmp2
+            elif operator == '|':
+                if not inplace:
+                    op_val[i] = tmp1 | tmp2
+                else:
+                    tmp1 |= tmp2
+
+            elif operator == 'int':
+                if inplace or rev:
+                    raise NameError("Inplace or reverse operations are not supported.")
+                op_val[i] = int(a)
+
+            elif operator == 'float':
+                if inplace or rev:
+                    raise NameError("Inplace or reverse operations are not supported.")
+                op_val[i] = float(a)
+
+            # Alias the inplace operation value.
+            if inplace:
+                op_val[i] = tmp1
+
+    except error:
+        error_text = "The %s error was raised as expected." % error
+        error_flag = True
+
+    # Printout.
+    if operator in ['~', 'abs', 'float', 'int', 'neg', 'pos']:
+        op_text = "%s(z)" % operator
+    elif operator in ['divmod']:
+        if rev:
+            op_text = "%s(%s, %s)" % (operator, a_text, b_text)
+        else:
+            op_text = "%s(%s, %s)" % (operator, b_text, a_text)
+    else:
+        if rev:
+            op_text = "%s %s %s" % (b_text, operator, a_text)
+        else:
+            op_text = "%s %s %s" % (a_text, operator, b_text)
+    if error_flag:
+        print("%-20s : %s (From node: %s)" % (op_text, error_text, a_repr))
+        return
+    else:
+        print("%-20s = %-20s (From %s)" % (op_text, op_val[0], a_repr))
+
+    # Test the value.
+    if op_val[0] != final_val:
+        raise NameError("Node + PyObject: The calculated value %s does not match the expected value %s." % (repr(op_val[0]), repr(final_val)))
+    if val2 != None and not inplace and op_val[1] != final_val:
+        raise NameError("Node + Node: The calculated value %s does not match the expected value %s." % (repr(op_val[1]), repr(final_val)))
+
+    # Check that the inplace operation did not destroy the node.
+    if inplace and not hasattr(op_val[0], 'strPath'):
+        raise NameError("The property tree Node object has been destroyed by the inplace operation, and replaced with '%s'." % repr(op_val[0]))
+
+
 def test_string_repr(name=None, value=-1, repr=None):
     """Test the string representation of a Node object.
 
@@ -406,26 +597,145 @@ except AttributeError:
     print("Skipping the AttributeError.")
 
 title("Testing maths operations.")
-print("z = %s" % repr(z))
-print("z + 1  = %s" % (z + 1))
-print("1 + z  = %s" % (1.0 + z))
-print("z - 1  = %s" % (z - 1.0))
-print("1 - z  = %s" % (1 - z))
-print("z * 2  = %s" % (z * 2.0))
-print("2 * z  = %s" % (2.0 * z))
-print("z / 3  = %s" % (z / 3.0))
-print("3 / z  = %s" % (3.0 / z))
-print("z**2   = %s" % (z**2))
-print("2**z   = %s" % (2**z))
-print("z %% 3  = %s" % (z % 3))
-print("3 %% z  = %s" % (3 % z))
-print("z // 3 = %s" % (z // 3))
-print("3 // z = %s" % (3 // z))
-props.test_maths[0] = -3
-z = props.test_maths[0]
-print("\nz = %s" % repr(z))
-print("z / 2 = %s" % (z / 2.0))
-print("2 / z = %s" % (2.0 / z))
+print("Type - bool:")
+test_maths_operation(val1=True, val2=False, final_val=1,          operator='+')
+test_maths_operation(val1=True, val2=False, final_val=1,          operator='+',  rev=True)
+test_maths_operation(val1=True, val2=False, final_val=1,          operator='-')
+test_maths_operation(val1=True, val2=False, final_val=-1,         operator='-',  rev=True)
+test_maths_operation(val1=True, val2=False, final_val=0,          operator='*')
+test_maths_operation(val1=True, val2=False, final_val=0,          operator='*',  rev=True)
+test_maths_operation(val1=True, val2=False,                       operator='/', error=ZeroDivisionError)
+test_maths_operation(val1=True, val2=False, final_val=0.0,        operator='/',  rev=True)
+test_maths_operation(val1=True, val2=False, final_val=1,          operator='**')
+test_maths_operation(val1=True, val2=False, final_val=0,          operator='**', rev=True)
+test_maths_operation(val1=True, val2=False,                       operator='%', error=ZeroDivisionError)
+test_maths_operation(val1=True, val2=False, final_val=False,      operator='%',  rev=True)
+test_maths_operation(val1=True, val2=False,                       operator='//', error=ZeroDivisionError)
+test_maths_operation(val1=True, val2=False, final_val=0,          operator='//', rev=True)
+test_maths_operation(val1=True, val2=False,                       operator='divmod', error=ZeroDivisionError)
+test_maths_operation(val1=True, val2=False, final_val=(0, False), operator='divmod', rev=True)
+test_maths_operation(val1=True,             final_val=-1,         operator='neg')
+test_maths_operation(val1=True,             final_val=1,          operator='pos')
+test_maths_operation(val1=True,             final_val=1,          operator='abs')
+test_maths_operation(val1=True,             final_val=-2,         operator='~')
+test_maths_operation(val1=True, val2=False, final_val=1,          operator='<<')
+test_maths_operation(val1=True, val2=False, final_val=0,          operator='<<', rev=True)
+test_maths_operation(val1=True, val2=False, final_val=1,          operator='>>')
+test_maths_operation(val1=True, val2=False, final_val=0,          operator='>>', rev=True)
+test_maths_operation(val1=True, val2=False, final_val=False,      operator='&')
+test_maths_operation(val1=True, val2=False, final_val=False,      operator='&', rev=True)
+test_maths_operation(val1=True, val2=False, final_val=True,       operator='^')
+test_maths_operation(val1=True, val2=False, final_val=True,       operator='^', rev=True)
+test_maths_operation(val1=True, val2=False, final_val=True,       operator='|')
+test_maths_operation(val1=True, val2=False, final_val=True,       operator='|', rev=True)
+test_maths_operation(val1=True,             final_val=1,          operator='int')
+test_maths_operation(val1=True,             final_val=1.0,        operator='float')
+
+print("\nType - int:")
+test_maths_operation(val1=20, val2=1,   final_val=20+1,          operator='+')
+test_maths_operation(val1=20, val2=1,   final_val=20+1,          operator='+',  rev=True)
+test_maths_operation(val1=20, val2=1,   final_val=20-1,          operator='-')
+test_maths_operation(val1=20, val2=1,   final_val=1-20,          operator='-',  rev=True)
+test_maths_operation(val1=20, val2=2,   final_val=20*2,          operator='*')
+test_maths_operation(val1=20, val2=2,   final_val=20*2,          operator='*',  rev=True)
+test_maths_operation(val1=20, val2=3,   final_val=20/3,          operator='/')
+test_maths_operation(val1=20, val2=3,   final_val=3/20,          operator='/',  rev=True)
+test_maths_operation(val1=5,  val2=2,   final_val=5**2,          operator='**')
+test_maths_operation(val1=5,  val2=2,   final_val=2**5,          operator='**', rev=True)
+test_maths_operation(val1=24, val2=9,   final_val=24%9,          operator='%')
+test_maths_operation(val1=5,  val2=2,   final_val=2%5,           operator='%',  rev=True)
+test_maths_operation(val1=20, val2=3,   final_val=20//3,         operator='//')
+test_maths_operation(val1=6,  val2=333, final_val=333//6,        operator='//', rev=True)
+test_maths_operation(val1=-3, val2=2,   final_val=divmod(-3, 2), operator='divmod')
+test_maths_operation(val1=-3, val2=2,   final_val=divmod(2, -3), operator='divmod', rev=True)
+test_maths_operation(val1=-3,           final_val=neg(-3),       operator='neg')
+test_maths_operation(val1=-3,           final_val=pos(-3),       operator='pos')
+test_maths_operation(val1=-3,           final_val=abs(-3),       operator='abs')
+test_maths_operation(val1=13,           final_val=~13,           operator='~')
+test_maths_operation(val1=13, val2=3,   final_val=13<<3,         operator='<<')
+test_maths_operation(val1=13, val2=3,   final_val=3<<13,         operator='<<', rev=True)
+test_maths_operation(val1=13, val2=3,   final_val=13>>3,         operator='>>')
+test_maths_operation(val1=13, val2=3,   final_val=3>>13,         operator='>>', rev=True)
+test_maths_operation(val1=1,  val2=0,   final_val=1&0,           operator='&')
+test_maths_operation(val1=1,  val2=0,   final_val=0&1,           operator='&', rev=True)
+test_maths_operation(val1=1,  val2=0,   final_val=1^0,           operator='^')
+test_maths_operation(val1=1,  val2=0,   final_val=0^1,           operator='^', rev=True)
+test_maths_operation(val1=1,  val2=0,   final_val=1|0,           operator='|')
+test_maths_operation(val1=1,  val2=0,   final_val=0|1,           operator='|', rev=True)
+test_maths_operation(val1=-3,           final_val=-3,            operator='int')
+test_maths_operation(val1=-3,           final_val=-3.0,          operator='float')
+
+print("\nType - float:")
+test_maths_operation(val1=20.0, val2=1.0,   final_val=20+1,          operator='+')
+test_maths_operation(val1=20.0, val2=1.0,   final_val=20+1,          operator='+',  rev=True)
+test_maths_operation(val1=20.0, val2=1.0,   final_val=20-1,          operator='-')
+test_maths_operation(val1=20.0, val2=1.0,   final_val=1-20,          operator='-',  rev=True)
+test_maths_operation(val1=20.0, val2=2.0,   final_val=20*2,          operator='*')
+test_maths_operation(val1=20.0, val2=2.0,   final_val=20*2,          operator='*',  rev=True)
+test_maths_operation(val1=20.0, val2=3.0,   final_val=20/3,          operator='/')
+test_maths_operation(val1=20.0, val2=3.0,   final_val=3/20,          operator='/',  rev=True)
+test_maths_operation(val1=5.0,  val2=2.0,   final_val=5**2,          operator='**')
+test_maths_operation(val1=5.0,  val2=2.0,   final_val=2**5,          operator='**', rev=True)
+test_maths_operation(val1=24.0, val2=9.0,   final_val=24%9,          operator='%')
+test_maths_operation(val1=5.0,  val2=2.0,   final_val=2%5,           operator='%',  rev=True)
+test_maths_operation(val1=20.0, val2=3.0,   final_val=20//3,         operator='//')
+test_maths_operation(val1=6.0,  val2=333.0, final_val=333//6,        operator='//', rev=True)
+test_maths_operation(val1=-3.0, val2=2.0,   final_val=divmod(-3, 2), operator='divmod')
+test_maths_operation(val1=-3.0, val2=2.0,   final_val=divmod(2, -3), operator='divmod', rev=True)
+test_maths_operation(val1=-3.0,             final_val=neg(-3),       operator='neg')
+test_maths_operation(val1=-3.0,             final_val=pos(-3),       operator='pos')
+test_maths_operation(val1=-3.0,             final_val=abs(-3),       operator='abs')
+test_maths_operation(val1=13.0,                                      operator='~', error=TypeError)
+test_maths_operation(val1=13.0, val2=3.0,                            operator='<<', error=TypeError)
+test_maths_operation(val1=13.0, val2=3.0,                            operator='<<', rev=True, error=TypeError)
+test_maths_operation(val1=13.0, val2=3.0,                            operator='>>', error=TypeError)
+test_maths_operation(val1=13.0, val2=3.0,                            operator='>>', rev=True, error=TypeError)
+test_maths_operation(val1=1.0,  val2=0.0,                            operator='&', error=TypeError)
+test_maths_operation(val1=1.0,  val2=0.0,                            operator='&', rev=True, error=TypeError)
+test_maths_operation(val1=1.0,  val2=0.0,                            operator='^', error=TypeError)
+test_maths_operation(val1=1.0,  val2=0.0,                            operator='^', rev=True, error=TypeError)
+test_maths_operation(val1=1.0,  val2=0.0,                            operator='|', error=TypeError)
+test_maths_operation(val1=1.0,  val2=0.0,                            operator='|', rev=True, error=TypeError)
+test_maths_operation(val1=-3.0,             final_val=-3,            operator='int')
+test_maths_operation(val1=-3.0,             final_val=-3.0,          operator='float')
+
+print("\nType - str:")
+test_maths_operation(val1="20", val2="1", final_val="201", operator='+')
+test_maths_operation(val1="20", val2="1", final_val="120", operator='+',  rev=True)
+test_maths_operation(val1="20", val2="1",                  operator='-', error=TypeError)
+test_maths_operation(val1="20", val2="1",                  operator='-',  rev=True, error=TypeError)
+test_maths_operation(val1="20", val2="2",                  operator='*', error=TypeError)
+test_maths_operation(val1="20", val2="2",                  operator='*',  rev=True, error=TypeError)
+test_maths_operation(val1="20", val2="3",                  operator='/', error=TypeError)
+test_maths_operation(val1="20", val2="3",                  operator='/',  rev=True, error=TypeError)
+test_maths_operation(val1="5",  val2="2",                  operator='**', error=TypeError)
+test_maths_operation(val1="5",  val2="2",                  operator='**', rev=True, error=TypeError)
+test_maths_operation(val1="24", val2="9",                  operator='%', error=TypeError)
+test_maths_operation(val1="5",  val2="2",                  operator='%',  rev=True, error=TypeError)
+test_maths_operation(val1="20", val2="3",                  operator='//', error=TypeError)
+test_maths_operation(val1="6",  val2="3",                  operator='//', rev=True, error=TypeError)
+test_maths_operation(val1="-3", val2="2",                  operator='divmod', error=TypeError)
+test_maths_operation(val1="-3", val2="2",                  operator='divmod', rev=True, error=TypeError)
+test_maths_operation(val1="-3",                            operator='neg', error=TypeError)
+test_maths_operation(val1="-3",                            operator='pos', error=TypeError)
+test_maths_operation(val1="-3",                            operator='abs', error=TypeError)
+test_maths_operation(val1="13",                            operator='~', error=TypeError)
+test_maths_operation(val1="13", val2="3",                  operator='<<', error=TypeError)
+test_maths_operation(val1="13", val2="3",                  operator='<<', rev=True, error=TypeError)
+test_maths_operation(val1="13", val2="3",                  operator='>>', error=TypeError)
+test_maths_operation(val1="13", val2="3",                  operator='>>', rev=True, error=TypeError)
+test_maths_operation(val1="1",  val2="0",                  operator='&', error=TypeError)
+test_maths_operation(val1="1",  val2="0",                  operator='&', rev=True, error=TypeError)
+test_maths_operation(val1="1",  val2="0",                  operator='^', error=TypeError)
+test_maths_operation(val1="1",  val2="0",                  operator='^', rev=True, error=TypeError)
+test_maths_operation(val1="1",  val2="0",                  operator='|', error=TypeError)
+test_maths_operation(val1="1",  val2="0",                  operator='|', rev=True, error=TypeError)
+test_maths_operation(val1="-3",           final_val=-3,    operator='int')
+test_maths_operation(val1="-3.0",                          operator='int', error=ValueError)
+test_maths_operation(val1="-3.0",         final_val=-3.0,  operator='float')
+test_maths_operation(val1="abcd",                          operator='int', error=ValueError)
+test_maths_operation(val1="abcd",                          operator='float', error=ValueError)
+
 
 title("Testing invalid maths operations.")
 props.invalid_math.type[0] = "X"
@@ -513,29 +823,64 @@ if a.c != "subnode_test":
 
 
 title("Testing inplace maths operations.")
-props.test_inplace[0] = 20
-z = props.test_inplace[0]; print("Init z  = %s" % repr(z))
-z += 1;  print("z += 1  = %s" % repr(z))
-z -= 11; print("z -= 11 = %s" % repr(z))
-z *= 2;  print("z *= 2  = %s" % repr(z))
-z /= 3;  print("z /= 3  = %s" % repr(z))
-z **= 2; print("z **= 2 = %s" % repr(z))
-z //= 3; print("z //= 3 = %s" % repr(z))
-z %= 3;  print("z %%= 3  = %s" % repr(z))
+print("Type - bool:")
+test_maths_operation(val1=True, val2=False, final_val=True,  operator='+',  inplace=True)
+test_maths_operation(val1=True, val2=False, final_val=True,  operator='-',  inplace=True)
+test_maths_operation(val1=True, val2=False, final_val=False, operator='*',  inplace=True)
+test_maths_operation(val1=True, val2=False,                  operator='/',  inplace=True, error=ZeroDivisionError)
+test_maths_operation(val1=False, val2=True, final_val=False, operator='/',  inplace=True)
+test_maths_operation(val1=True, val2=False, final_val=True,  operator='**', inplace=True)
+test_maths_operation(val1=True, val2=False,                  operator='%',  inplace=True, error=ZeroDivisionError)
+test_maths_operation(val1=False, val2=True, final_val=False, operator='%',  inplace=True)
+test_maths_operation(val1=True, val2=False,                  operator='//', inplace=True, error=ZeroDivisionError)
+test_maths_operation(val1=False, val2=True, final_val=False, operator='//', inplace=True)
+test_maths_operation(val1=True, val2=False, final_val=True,  operator='<<', inplace=True)
+test_maths_operation(val1=True, val2=False, final_val=True,  operator='>>', inplace=True)
+test_maths_operation(val1=True, val2=False, final_val=False, operator='&',  inplace=True)
+test_maths_operation(val1=True, val2=False, final_val=True,  operator='^',  inplace=True)
+test_maths_operation(val1=True, val2=False, final_val=True,  operator='|',  inplace=True)
 
-props.test_inplace[1] = 20.0
-z = props.test_inplace[1]; print("\nInit z  = %s" % repr(z))
-z += 1;  print("z += 1  = %s" % repr(z))
-z -= 11; print("z -= 11 = %s" % repr(z))
-z *= 2;  print("z *= 2  = %s" % repr(z))
-z /= 3;  print("z /= 3  = %s" % repr(z))
-z **= 2; print("z **= 2 = %s" % repr(z))
-z //= 3; print("z //= 3 = %s" % repr(z))
-z %= 3;  print("z %%= 3  = %s" % repr(z))
+print("\nType - int:")
+test_maths_operation(val1=20, val2=1, final_val=21,  operator='+',  inplace=True)
+test_maths_operation(val1=20, val2=1, final_val=19,  operator='-',  inplace=True)
+test_maths_operation(val1=20, val2=2, final_val=40,  operator='*',  inplace=True)
+test_maths_operation(val1=20, val2=3, final_val=6,   operator='/',  inplace=True)
+test_maths_operation(val1=5,  val2=2, final_val=25,  operator='**', inplace=True)
+test_maths_operation(val1=24, val2=9, final_val=6,   operator='%',  inplace=True)
+test_maths_operation(val1=20, val2=3, final_val=6,   operator='//', inplace=True)
+test_maths_operation(val1=13, val2=3, final_val=104, operator='<<', inplace=True)
+test_maths_operation(val1=13, val2=3, final_val=1,   operator='>>', inplace=True)
+test_maths_operation(val1=1,  val2=0, final_val=0,   operator='&',  inplace=True)
+test_maths_operation(val1=1,  val2=0, final_val=1,   operator='^',  inplace=True)
+test_maths_operation(val1=1,  val2=0, final_val=1,   operator='|',  inplace=True)
 
-props.test_inplace[2] = "20"
-z = props.test_inplace[2]; print("\nInit z   = %s" % repr(z))
-z += "1";  print("z += \"1\" = %s" % repr(z))
+print("\nType - float:")
+test_maths_operation(val1=20.0, val2=1.0, final_val=20+1,  operator='+',  inplace=True)
+test_maths_operation(val1=20.0, val2=1.0, final_val=20-1,  operator='-',  inplace=True)
+test_maths_operation(val1=20.0, val2=2.0, final_val=20*2,  operator='*',  inplace=True)
+test_maths_operation(val1=20.0, val2=3.0, final_val=20/3,  operator='/',  inplace=True)
+test_maths_operation(val1=5.0,  val2=2.0, final_val=5**2,  operator='**', inplace=True)
+test_maths_operation(val1=24.0, val2=9.0, final_val=24%9,  operator='%',  inplace=True)
+test_maths_operation(val1=20.0, val2=3.0, final_val=20//3, operator='//', inplace=True)
+test_maths_operation(val1=13.0, val2=3.0,                  operator='<<', error=TypeError, inplace=True)
+test_maths_operation(val1=13.0, val2=3.0,                  operator='>>', error=TypeError, inplace=True)
+test_maths_operation(val1=1.0,  val2=0.0,                  operator='&',  error=TypeError, inplace=True)
+test_maths_operation(val1=1.0,  val2=0.0,                  operator='^',  error=TypeError, inplace=True)
+test_maths_operation(val1=1.0,  val2=0.0,                  operator='|',  error=TypeError, inplace=True)
+
+print("\nType - str:")
+test_maths_operation(val1="20", val2="1", final_val="201", operator='+',  inplace=True)
+test_maths_operation(val1="20", val2="1",                  operator='-',  error=TypeError, inplace=True)
+test_maths_operation(val1="20", val2="2",                  operator='*',  error=TypeError, inplace=True)
+test_maths_operation(val1="20", val2="3",                  operator='/',  error=TypeError, inplace=True)
+test_maths_operation(val1="5",  val2="2",                  operator='**', error=TypeError, inplace=True)
+test_maths_operation(val1="24", val2="9",                  operator='%',  error=TypeError, inplace=True)
+test_maths_operation(val1="20", val2="3",                  operator='//', error=TypeError, inplace=True)
+test_maths_operation(val1="13", val2="3",                  operator='<<', error=TypeError, inplace=True)
+test_maths_operation(val1="13", val2="3",                  operator='>>', error=TypeError, inplace=True)
+test_maths_operation(val1="1",  val2="0",                  operator='&',  error=TypeError, inplace=True)
+test_maths_operation(val1="1",  val2="0",                  operator='^',  error=TypeError, inplace=True)
+test_maths_operation(val1="1",  val2="0",                  operator='|',  error=TypeError, inplace=True)
 
 
 title("Boolean checks.")

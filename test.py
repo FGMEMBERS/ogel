@@ -15,6 +15,24 @@ MATH_CHECK_STRINGS = [
 ]
 
 
+def check_value(val1, val2):
+    """Check that the two values are the same.
+
+    @param val1:    The first value.
+    @type val1:     object
+    @param val2:    The second value.
+    @type val2:     object
+    """
+
+    # Match.
+    if val1 == val2:
+        print("The values match, %s == %s." % (repr(val1), repr(val2)))
+
+    # No match.
+    else:
+        raise NameError("The values do not match, %s == %s." % (repr(val1), repr(val2)))
+
+
 def invalid_math_check(node=None, type=None):
     """Test out the invalid mathematical operation.
 
@@ -238,6 +256,17 @@ def test_length(name=None, length=0):
     print("The props.%s length: %s (should be %s)." % (name, __len__, length))
     if __len__ != length:
         raise NameError("The props.%s length of %i is incorrect." % (name, __len__))
+
+    # Looping test.
+    for i in range(len(node)):
+        print("Element %i: %s" % (i, repr(node[i])))
+        real_path = "/%s[%i]" % (name, i)
+        real_path = real_path.replace('__', '=======')
+        real_path = real_path.replace('_', '-')
+        real_path = real_path.replace('=======', '_')
+        real_path = real_path.replace('.', '/')
+        if node[i].strPath() != real_path:
+            raise NameError("The path '%s' should be '%s'." % (node[i].strPath(), real_path))
 
 
 def test_string_repr(name=None, value=-1, repr=None):
@@ -515,8 +544,33 @@ test_bool(title="int type", name="test_bool_check[1]", value_true=1, value_false
 test_bool(title="double type", name="test_bool_check[2]", value_true=1.0, value_false=0.0)
 test_bool(title="string type", name="test_bool_check[3]", value_true="Hello", value_false="")
 
+
+title("Testing indexing.")
+props.test_indexing[2] = 10
+for i in range(5):
+    props.test_indexing[10] = i
+props.test_indexing[2].a[2] = "Hello!"
+props.test_indexing[10].a[2] = "Hello"
+check_value(val1=props.test_indexing.strPath(), val2='/test-indexing')
+check_value(val1=props.test_indexing[10].strPath(), val2='/test-indexing[10]')
+check_value(val1=props.test_indexing[2], val2=10)
+check_value(val1=props.test_indexing[10], val2=4)
+check_value(val1=props.test_indexing[2].a[2], val2='Hello!')
+check_value(val1=props.test_indexing[10].a[2], val2='Hello')
+props.test_indexing2 = "X"
+x = props.test_indexing2
+props.test_indexing2[1] = "Y"
+y = props.test_indexing2[1]
+props.test_indexing2[2] = "Z"
+z = props.test_indexing2[2]
+check_value(val1=x, val2='X')
+check_value(val1=y, val2='Y')
+check_value(val1=z, val2='Z')
+
+
 print("\n\n" + "*"*80 + "\n")
 
 # Finish with an error.
 print("Here is an AttributeError, for luck:")
+props.does_not_exist
 print(props.does_not_exist)

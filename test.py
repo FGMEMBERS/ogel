@@ -1,5 +1,6 @@
 # Python module imports.
 from operator import pos, neg
+from prop_tree import extract_path, extract_type, extract_value, is_node
 import sys
 
 
@@ -245,6 +246,36 @@ def test_invalid_maths(node=None, type=None):
             print("Correct TypeError for %s" % MATH_CHECK_STRINGS[i] % type)
 
 
+def test_prop_tree_fns(obj=None, result=True):
+    """Test if the object is a Node object.
+
+    @keyword obj:       The object to test.
+    @type obj:          object
+    @keyword result:    The expected result - True if the object is a Node, False otherwise.
+    @type result:       bool
+    """
+
+    # Printout.
+    print("\nChecking %s." % repr(obj))
+
+    # Check.
+    answer = is_node(obj)
+
+    # Test the extraction functions.
+    if answer:
+        print("extract_path(obj)  = %s" % repr(extract_path(obj)))
+        print("extract_type(obj)  = %s" % repr(extract_type(obj)))
+        print("extract_value(obj) = %s" % repr(extract_value(obj)))
+
+    # Correct answer.
+    if answer == result:
+        print("is_node(obj) = %s" % repr(answer))
+
+    # Failure.
+    else:
+        raise NameError("is_node(%s) != %s." % (repr(obj), repr(result)))
+
+
 def test_length(name=None, length=0):
     """Test the length of the property tree array.
 
@@ -269,8 +300,8 @@ def test_length(name=None, length=0):
         real_path = real_path.replace('_', '-')
         real_path = real_path.replace('=======', '_')
         real_path = real_path.replace('.', '/')
-        if node[i].strPath() != real_path:
-            raise NameError("The path '%s' should be '%s'." % (node[i].strPath(), real_path))
+        if extract_path(node[i]) != real_path:
+            raise NameError("The path '%s' should be '%s'." % (extract_path(node[i]), real_path))
 
 
 def test_maths_operation(val1=None, val2=None, final_val=None, operator=None, error=None, rev=False, inplace=False):
@@ -456,7 +487,7 @@ def test_maths_operation(val1=None, val2=None, final_val=None, operator=None, er
         raise NameError("Node + Node: The calculated value %s does not match the expected value %s." % (repr(op_val[1]), repr(final_val)))
 
     # Check that the inplace operation did not destroy the node.
-    if inplace and not hasattr(op_val[0], 'strPath'):
+    if inplace and not hasattr(op_val[0], '_path'):
         raise NameError("The property tree Node object has been destroyed by the inplace operation, and replaced with '%s'." % repr(op_val[0]))
 
 
@@ -509,7 +540,7 @@ def test_underscore_translation(name=None, path=None, value=None):
 
     # Print and check the path.
     print(repr(node))
-    node_path = node.strPath()
+    node_path = extract_path(node)
     if node_path != path:
         raise NameError("The paths '%s' and '%s' do not match." % node_path, path)
 
@@ -543,12 +574,12 @@ title("Testing some properties.")
 print("%-20s %s" % ("props.sim: ", repr(props.sim)))
 x = props.sim.aero
 print("%-20s %s" % ("x:", x))
-print("%-20s %s" % ("x.strPath(): ", x.strPath()))
+print("%-20s %s" % ("extract_path(x): ", extract_path(x)))
 y = props.systems.electrical.serviceable
 print("%-20s %s" % ("x: ", x))
 print("%-20s %s" % ("y: ", y))
-print("%-20s %s" % ("x.strPath(): ", x.strPath()))
-print("%-20s %s" % ("y.strPath(): ", y.strPath()))
+print("%-20s %s" % ("extract_path(x): ", extract_path(x)))
+print("%-20s %s" % ("extract_path(y): ", extract_path(y)))
 print("%-20s %s" % ("repr(x): ", repr(x)))
 print("%-20s %s" % ("repr(y): ", repr(y)))
 
@@ -894,8 +925,8 @@ for i in range(5):
     props.test_indexing[10] = i
 props.test_indexing[2].a[2] = "Hello!"
 props.test_indexing[10].a[2] = "Hello"
-check_value(val1=props.test_indexing.strPath(), val2='/test-indexing')
-check_value(val1=props.test_indexing[10].strPath(), val2='/test-indexing[10]')
+check_value(val1=extract_path(props.test_indexing), val2='/test-indexing')
+check_value(val1=extract_path(props.test_indexing[10]), val2='/test-indexing[10]')
 check_value(val1=props.test_indexing[2], val2=10)
 check_value(val1=props.test_indexing[10], val2=4)
 check_value(val1=props.test_indexing[2].a[2], val2='Hello!')
@@ -909,6 +940,46 @@ z = props.test_indexing2[2]
 check_value(val1=x, val2='X')
 check_value(val1=y, val2='Y')
 check_value(val1=z, val2='Z')
+
+
+title("Testing prop_tree functions.")
+props.test_node_functions[2] = "Random string"
+test_prop_tree_fns(obj=props.test_node_functions[2], result=True)
+test_prop_tree_fns(obj=2, result=False)
+test_prop_tree_fns(obj="Hello", result=False)
+test_prop_tree_fns(obj=object, result=False)
+test_prop_tree_fns(obj=props, result=False)
+print("\nView the function docs:")
+print("\nextract_path.__doc__ = \n\"\"\"\n%s\n\"\"\"" % extract_path.__doc__)
+print("\nextract_type.__doc__ = \n\"\"\"\n%s\n\"\"\"" % extract_type.__doc__)
+print("\nextract_value.__doc__ = \n\"\"\"\n%s\n\"\"\"" % extract_value.__doc__)
+print("\nis_node.__doc__ = \n\"\"\"\n%s\n\"\"\"" % extract_value.__doc__)
+
+
+title("Testing Node hidden objects.")
+props.test_node_hidden = True
+a = props.test_node_hidden
+print("props.test_node_hidden.__doc__: %s" % repr(a.__doc__))
+print("props.test_node_hidden._path: %s" % repr(a._path))
+print("extract_path(props.test_node_hidden): %s" % repr(extract_path(a)))
+
+
+title("Testing a new copy of Props and Node (segfault checks).")
+import prop_tree
+try:
+    new_node = prop_tree.Node()
+except Exception:
+    pass
+new_node = prop_tree.Node(path="test_new_node")
+try:
+    print("A new Node: %s" % repr(new_node))
+except AttributeError:
+    pass
+props.test_new_node = True
+print("A new Node: %s" % repr(new_node))
+new_props = prop_tree.Props()
+print("A new Props object: %s" % repr(new_props))
+print("The new Props object test_new_node Node: %s" % repr(new_props.test_new_node))
 
 
 print("\n\n" + "*"*80 + "\n")

@@ -37,39 +37,6 @@ def check_value(val1, val2):
         raise NameError("The values do not match, %s == %s." % (repr(val1), repr(val2)))
 
 
-def invalid_math_check(node=None, type=None):
-    """Test out the invalid mathematical operation.
-
-    @keyword node:  The Python Node object.
-    @type node:     prop_tree.Node instance
-    @keyword type:  The object type for the node.
-    @type type:     str
-    """
-
-    # Loop over the 8 different operations.
-    for i in range(8):
-        try:
-            if i == 0:
-                node + 1
-            elif i == 1:
-                1 + node
-            elif i == 2:
-                node - 1
-            elif i == 3:
-                1 - node
-            elif i == 4:
-                node * 1
-            elif i == 5:
-                1 * node
-            elif i == 6:
-                node / 1
-            elif i == 7:
-                1 / node
-            raise NameError("TypeError not raised.")
-        except TypeError:
-            print("Correct TypeError for %s" % MATH_CHECK_STRINGS[i] % type)
-
-
 def test_bool(title=None, name=None, value_true=None, value_false=None):
     """Test the boolean qualities of the Node object.
 
@@ -243,6 +210,39 @@ def test_equality(name=None, value=-1, eq=-1, ne=-1, le=-1, ge=-1, lt=-1, gt=-1)
     # Failure of the tests.
     if not flag:
         raise NameError("Test failure.")
+
+
+def test_invalid_maths(node=None, type=None):
+    """Test out the invalid mathematical operation.
+
+    @keyword node:  The Python Node object.
+    @type node:     prop_tree.Node instance
+    @keyword type:  The object type for the node.
+    @type type:     str
+    """
+
+    # Loop over the 8 different operations.
+    for i in range(8):
+        try:
+            if i == 0:
+                node + 1
+            elif i == 1:
+                1 + node
+            elif i == 2:
+                node - 1
+            elif i == 3:
+                1 - node
+            elif i == 4:
+                node * 1
+            elif i == 5:
+                1 * node
+            elif i == 6:
+                node / 1
+            elif i == 7:
+                1 / node
+            raise NameError("TypeError not raised.")
+        except TypeError:
+            print("Correct TypeError for %s" % MATH_CHECK_STRINGS[i] % type)
 
 
 def test_length(name=None, length=0):
@@ -740,10 +740,8 @@ test_maths_operation(val1="abcd",                          operator='float', err
 title("Testing invalid maths operations.")
 props.invalid_math.type[0] = "X"
 print(repr(props.invalid_math.type[0]))
-invalid_math_check(node=props.environment.aaa, type="<str>")
-props.invalid_math.type[1] = True
-print(repr(props.invalid_math.type[1]))
-invalid_math_check(node=props.environment.aaa, type="<bool>")
+test_invalid_maths(node=props.invalid_math.type[0], type="<str>")
+
 
 title("Testing the non-existant path '/abc' for an AttributeError.")
 try:

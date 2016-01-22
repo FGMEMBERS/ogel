@@ -1,6 +1,6 @@
 # Python module imports.
 from operator import pos, neg
-from prop_tree import extract_path, extract_type, extract_value, is_node
+from prop_tree import extract_alias, extract_path, extract_type, extract_value, is_alias, is_node
 import sys
 
 
@@ -263,13 +263,15 @@ def test_prop_tree_fns(obj=None, result=True):
 
     # Test the extraction functions.
     if answer:
+        print("extract_alias(obj) = %s" % repr(extract_alias(obj)))
         print("extract_path(obj)  = %s" % repr(extract_path(obj)))
         print("extract_type(obj)  = %s" % repr(extract_type(obj)))
         print("extract_value(obj) = %s" % repr(extract_value(obj)))
+        print("is_alias(obj)      = %s" % repr(is_alias(obj)))
 
     # Correct answer.
     if answer == result:
-        print("is_node(obj) = %s" % repr(answer))
+        print("is_node(obj)       = %s" % repr(answer))
 
     # Failure.
     else:
@@ -944,7 +946,9 @@ check_value(val1=z, val2='Z')
 
 title("Testing prop_tree functions.")
 props.test_node_functions[2] = "Random string"
+props.test_node_functions[3] = props.test_node_functions[2]
 test_prop_tree_fns(obj=props.test_node_functions[2], result=True)
+test_prop_tree_fns(obj=props.test_node_functions[3], result=True)
 test_prop_tree_fns(obj=2, result=False)
 test_prop_tree_fns(obj="Hello", result=False)
 test_prop_tree_fns(obj=object, result=False)
@@ -980,6 +984,31 @@ print("A new Node: %s" % repr(new_node))
 new_props = prop_tree.Props()
 print("A new Props object: %s" % repr(new_props))
 print("The new Props object test_new_node Node: %s" % repr(new_props.test_new_node))
+
+
+title("Test Node aliasing.")
+test_vals_orig = ["test", False, -5, 20.0]
+test_vals = ["Hop", "", True, False, 1, 0, 1.0, 0.0]
+for i in range(len(test_vals_orig)):
+    # Loop over the second set of values.
+    for j in range(len(test_vals)):
+        # Create a starting value, for type checking on overwrite.
+        props.test_alias_new[i].iter[j] = test_vals_orig[i]
+
+        # Set the value to be copied.
+        props.test_alias[j] = test_vals[j]
+
+        # Alias.
+        print("\nSource value:        %s" % repr(test_vals[j]))
+        print("Pre-target value:    %s" % repr(test_vals_orig[i]))
+        print("Source node:         %s" % repr(props.test_alias[j]))
+        print("Pre-target node:     %s" % repr(props.test_alias_new[i].iter[j]))
+        props.test_alias_new[i].iter[j] = props.test_alias[j]
+        print("Updated target node: %s" % repr(props.test_alias_new[i].iter[j]))
+
+        # Check.
+        if props.test_alias_new[i].iter[j] != test_vals[j]:
+            raise Exception("The value has not been copied correctly to %s." % repr(props.test_alias_new[i].iter[j]))
 
 
 print("\n\n" + "*"*80 + "\n")

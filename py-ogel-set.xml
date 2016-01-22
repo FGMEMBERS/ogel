@@ -1,27 +1,27 @@
 <?xml version="1.0"?>
 <!--
    *************************************************************************
-   This file is part of ogeL.
+   This file is part of py-ogeL.
 
-    ogeL is free software; you can redistribute it and/or modify
+    py-ogeL is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    ogeL is distributed in the hope that it will be useful,
+    py-ogeL is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with ogeL; if not, write to the Free Software
+    along with py-ogeL; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
    *************************************************************************
 
-This is ogeL - inspired by a little toy.
+This is py-ogeL - inspired by a little toy.
 To use, call 
 
-fgfs -aircraft=ogel 
+fgfs -aircraft=py-ogel 
 (note: the -aircraft parameter has to be written with two hyphens,
 but that is illegal in xml comments)
 
@@ -38,7 +38,7 @@ $Revision$
 <PropertyList>
     <sim>
         <author>Torsten Dreyer</author>
-        <description>ogeL experimental for JSBSim 2.x (fg after 0.9.9)</description>
+        <description>py-ogeL experimental for JSBSim 2.x (fg after 0.9.9)</description>
         <status>early-production</status>
         <rating>
           <FDM type="int">5</FDM>
@@ -49,13 +49,13 @@ $Revision$
         <flight-model>jsb</flight-model>
         <aero>ogel-jsbsim-2.0</aero>
         <startup>
-            <splash-texture>Aircraft/ogel/splash.rgb</splash-texture>
+            <splash-texture>Aircraft/py-ogel/splash.rgb</splash-texture>
         </startup>
         <panel>
             <visibility>false</visibility>
         </panel>
         <model>
-            <path>Aircraft/ogel/Models/SinglePiston.xml</path>
+            <path>Aircraft/py-ogel/Models/SinglePiston.xml</path>
         </model>
         <view n="0">
             <internal archive="y">true</internal>
@@ -67,7 +67,7 @@ $Revision$
             </config>
         </view>
         <help>
-            <title>ogeL - fly with fun!</title>
+            <title>py-ogeL - fly with fun!</title>
             <line>Go and explore the world with oLeg, the pilot.</line>
             <line>Hit the 's' bar and the propeller starts to turn</line>
             <line>slowly advance the throttle to about 1/2 way full travel</line>
@@ -79,7 +79,7 @@ $Revision$
         <menubar>
           <default>
             <menu n="100">
-              <label>ogeL</label>
+              <label>py-ogeL</label>
               <enabled type="bool">true</enabled>
               <item>
                 <label>Select Livery</label>
@@ -122,19 +122,19 @@ $Revision$
         </keyboard>
     </input>
     <nasal>
-      <ogel>
+      <py-ogel>
         <script>
         <![CDATA[
           aircraft.livery.init(
-              "Aircraft/ogel/Models/Liveries", 
+              "Aircraft/py-ogel/Models/Liveries", 
               "sim/model/livery/name" );
         ]]>
         </script>
 
-      </ogel>
+      </py-ogel>
     </nasal>
     <python>
-      <ogel>
+      <py-ogel>
         <file>test.py</file>
         <script>
             print("\n" + "*"*80)
@@ -145,7 +145,7 @@ $Revision$
                 print("a: %s" % a)
             print("*"*80 + "\n")
         </script>
-      </ogel>
+      </py-ogel>
     </python>
 
 
